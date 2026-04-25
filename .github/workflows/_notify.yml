@@ -1,0 +1,72 @@
+name: Send Notification
+
+on:
+  workflow_call:
+    inputs:
+      subject:
+        description: Email subject
+        required: true
+        type: string
+      body:
+        description: Email body
+        required: true
+        type: string
+      service-name:
+        description: Name of the service (optional)
+        required: false
+        type: string
+      artifact-name:
+        description: Name of the artifact to attach (optional)
+        required: false
+        type: string
+    secrets:
+      BREVO_API_KEY:
+        required: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        if: inputs.artifact-name != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ./artifact
+
+      - name: Send email without attachment
+        if: inputs.artifact-name == ''
+        run: |
+          curl -X POST "https://api.brevo.com/v3/smtp/email" \
+            -H "Content-Type: application/json" \
+            -H "api-key: ${{ secrets.BREVO_API_KEY }}" \
+            -d '{
+              "sender": {"email": "fitforge360.in@gmail.com"},
+              "to": [{"email": "fitforge360.in@gmail.com"}],
+              "subject": "${{ inputs.subject }}",
+              "htmlContent": "${{ inputs.body }}<br><br>Repository: ${{ github.repository }}<br>Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }'
+
+      - name: Send email with attachment
+        if: inputs.artifact-name != ''
+        run: |
+          # Get the file from artifact
+          FILE_PATH=$(find ./artifact -type f | head -n 1)
+          FILE_NAME=$(basename "$FILE_PATH")
+          
+          # Base64 encode the file
+          FILE_CONTENT=$(base64 -w 0 "$FILE_PATH")
+          
+          curl -X POST "https://api.brevo.com/v3/smtp/email" \
+            -H "Content-Type: application/json" \
+            -H "api-key: ${{ secrets.BREVO_API_KEY }}" \
+            -d '{
+              "sender": {"email": "fitforge360.in@gmail.com"},
+              "to": [{"email": "fitforge360.in@gmail.com"}],
+              "subject": "${{ inputs.subject }}",
+              "htmlContent": "${{ inputs.body }}<br><br>Repository: ${{ github.repository }}<br>Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "attachment": [{
+                "name": "'"$FILE_NAME"'",
+                "content": "'"$FILE_CONTENT"'"
+              }]
+            }'

@@ -1,0 +1,45 @@
+name: SAST Scan (SonarQube)
+
+on:
+  workflow_call:
+    inputs:
+      service-path:
+        description: Path to the service directory
+        required: false
+        default: '.'
+        type: string
+    secrets:
+      SONAR_TOKEN:
+        required: true
+      SONAR_URL:
+        required: true
+    outputs:
+      quality-gate:
+        description: Quality gate status (passed/failed)
+        value: ${{ jobs.sast.outputs.quality-gate }}
+
+jobs:
+  sast:
+    runs-on: ubuntu-latest
+    outputs:
+      quality-gate: ${{ steps.quality-gate.outputs.quality-gate }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_URL }}
+        with:
+          projectBaseDir: ${{ inputs.service-path }}
+
+      - name: SonarQube Quality Gate
+        uses: SonarSource/sonarqube-quality-gate-action@v1
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        id: quality-gate
