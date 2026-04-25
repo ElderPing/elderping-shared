@@ -41,8 +41,8 @@ jobs:
             -H "Content-Type: application/json" \
             -H "api-key: ${{ secrets.BREVO_API_KEY }}" \
             -d '{
-              "sender": {"email": "fitforge360.in@gmail.com"},
-              "to": [{"email": "fitforge360.in@gmail.com"}],
+              "sender": {"email": "appusimon5599@gmail.com"},
+              "to": [{"email": "elderping9@gmail.com"}],
               "subject": "${{ inputs.subject }}",
               "htmlContent": "${{ inputs.body }}<br><br>Repository: ${{ github.repository }}<br>Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             }'
