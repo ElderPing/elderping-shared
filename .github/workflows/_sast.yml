@@ -43,3 +43,8 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         id: quality-gate
+        
+      - name: Set quality gate output
+        id: quality-gate
+        run: |
+          echo "quality-gate=${{ steps.quality-gate.outputs.qualityGateStatus }}" >> $GITHUB_OUTPUT
