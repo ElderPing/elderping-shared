@@ -106,7 +106,7 @@ jobs:
           else
             TAG="${{ inputs.target-env }}-${GITHUB_SHA}"
           fi
-          IMAGE_NAME="ElderPing-${{ inputs.service-name }}"
+          IMAGE_NAME="elderping-${{ inputs.service-name }}"
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "full_image=${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$TAG" >> $GITHUB_OUTPUT
 
