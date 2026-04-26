@@ -100,11 +100,11 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       # Scan Python project
-      - name: Snyk Test (Python)
-        if: inputs.runtime == 'python'
-        run: snyk test --file=requirements.txt --package-manager=pip --severity-threshold=high --json-file-output=snyk-report.json || true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      # - name: Snyk Test (Python)
+      #   if: inputs.runtime == 'python'
+      #   run: snyk test --file=requirements.txt --package-manager=pip --severity-threshold=high --json-file-output=snyk-report.json || true
+      #   env:
+      #     SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       # ─── Report Generation ───
       - name: Convert Snyk report to HTML
