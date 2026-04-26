@@ -7,7 +7,7 @@
 # commit and syncs the deployment automatically.
 #
 # Usage:
-#   uses: lavenbloom/lavenbloom-shared/.github/workflows/cd-template.yml@main
+#   uses: ElderPing/elderping-shared/.github/workflows/cd-template.yml@main
 # ============================================================================
 
 name: CD — Update Helm Chart
@@ -36,7 +36,7 @@ on:
         description: "Helm charts repository (org/repo format)"
         required: false
         type: string
-        default: "lavenbloom/lavenbloom-charts"
+        default: "ElderPing/elderping-k8s-charts"
       charts-path:
         description: "Path prefix to the service values file within the charts repo"
         required: false
@@ -72,7 +72,9 @@ jobs:
           FILE="charts/${{ inputs.charts-path }}/${{ inputs.service-name }}/values-${{ inputs.target-env }}.yaml"
           if [ -f "$FILE" ]; then
             echo "📝 Updating $FILE with tag ${{ inputs.image-tag }}"
-            yq -i ".${{ inputs.service-name }}.image.tag = \"${{ inputs.image-tag }}\"" "$FILE"
+            # Convert kebab-case service-name to camelCase for values file
+            SERVICE_NAME_CAMEL=$(echo "${{ inputs.service-name }}" | sed 's/-\([a-z]\)/\U\1/g')
+            yq -i ".${SERVICE_NAME_CAMEL}.image.tag = \"${{ inputs.image-tag }}\"" "$FILE"
           else
             echo "::error::File not found: $FILE (Is your service-name correct?)"
             exit 1
