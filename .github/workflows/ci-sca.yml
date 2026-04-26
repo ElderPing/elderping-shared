@@ -32,11 +32,11 @@ on:
         required: false
         type: string
         default: "20"
-      python-version:
-        description: "Python version (when runtime is 'python')"
-        required: false
-        type: string
-        default: "3.11"
+      # python-version:
+      #   description: "Python version (when runtime is 'python')"
+      #   required: false
+      #   type: string
+      #   default: "3.11"
     secrets:
       SNYK_TOKEN:
         required: true
@@ -74,16 +74,16 @@ jobs:
         run: npm ci
 
       # ─── Python Runtime Setup ───
-      - name: Setup Python
-        if: inputs.runtime == 'python'
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ inputs.python-version }}
-          cache: "pip"
+      # - name: Setup Python
+      #   if: inputs.runtime == 'python'
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: ${{ inputs.python-version }}
+      #     cache: "pip"
 
-      - name: Install Python dependencies
-        if: inputs.runtime == 'python'
-        run: pip install -r requirements.txt
+      # - name: Install Python dependencies
+      #   if: inputs.runtime == 'python'
+      #   run: pip install -r requirements.txt
 
       # ─── Snyk Scan ───
       - name: Setup Snyk CLI
